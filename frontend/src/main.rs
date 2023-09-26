@@ -7,7 +7,6 @@ pub mod util;
 
 pub mod app;
 pub mod page;
-
 use cfg_if::cfg_if;
 
 pub const ROOT_API_URL: &str = "http://127.0.0.1:8070/";
@@ -30,4 +29,6 @@ fn main() {
 
 mod prelude {
     pub use crate::page;
+
+    pub use crate::util::{async_handler, sync_handler};
 }
