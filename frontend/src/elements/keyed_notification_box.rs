@@ -44,7 +44,7 @@ pub fn KeyedNotificationBox<'a>(cx: Scope<'a, KeyedNotificationsProps<'a>>) -> E
       li {
         "{msg}"
       }
-    };
+    }
   });
 
   let legend = cx.props.legend.unwrap_or("Errors");

@@ -20,7 +20,7 @@ impl PageState {
   }
 
   pub fn can_submit(&self) -> bool {
-    !(self.form_errors.has_messages() || self.username.is_empty() || self.password.is_empty())
+    !(self.form_errors.has_messages() || self.username.current().is_empty() || self.password.current().is_empty())
   }
 }
 
