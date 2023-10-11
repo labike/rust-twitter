@@ -200,3 +200,30 @@ After creating a new migration, delete the testing database using:
 ```bash
 psql -d postgres -c 'DROP DATABASE uchat_test;'
 ```
+
+```查看所有命令
+just server-api -- --help
+just --list
+```
+
+```生成密钥
+just server-api -- gen-key
+```
+
+```创建数据库
+just db-reset
+出现TCP/IP连接被拒绝时: brew services start postgresql
+DATABASE_URL: ostgres://xxx@localhost/uchat中xxx是自己系统的名字， 比如mac终端下`小明@MacBook-Pro`， xxx就是小明
+可以通过whoami查看你的计算机用户名
+
+psql -d 数据库名称 -U 用户名
+
+psql -d uchat -U 小明
+CREATE USER example SUPERUSER;
+
+或者
+createuser -s(表示超级用户) example
+
+设置用户密码 CREATE USER example WITH SUPERUSER PASSWORD '你的密码'
+或者createuser -s -P '你的密码'
+```

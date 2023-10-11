@@ -8,7 +8,7 @@ use tracing::{info, debug, error};
 struct Cli {
   // api -d <URL>
   // api --database-url <URL>
-  #[clap(short, long, default_value = "postgres://test@localhost:/test", env = "API_DATABASE_URL")]
+  #[clap(short, long, default_value = "postgres://labikemmy@localhost:/labikemmy", env = "API_DATABASE_URL")]
   database_url: String,
 
   #[clap(short, long, default_value = "127.0.0.1:8070", env = "API_BIND")]
