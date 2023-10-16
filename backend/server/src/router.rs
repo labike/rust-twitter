@@ -1,4 +1,8 @@
-use axum::{Router, routing::get};
+use axum::{Router, routing::get, http::HeaderValue};
+use hyper::{Method, header::CONTENT_TYPE};
+use tower::{ServiceBuilder, Layer};
+use tower_http::{trace::{TraceLayer, DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse}, LatencyUnit, cors::CorsLayer};
+use tracing::Level;
 use crate::AppState;
 
 pub fn new_router(state: AppState) -> axum::Router {
@@ -10,4 +14,29 @@ pub fn new_router(state: AppState) -> axum::Router {
   Router::new()
     .merge(public_routes)
     .merge(authorized_routes)
+    .layer(
+      ServiceBuilder::new()
+        .layer(
+          TraceLayer::new_for_http()
+          .make_span_with(DefaultMakeSpan::new().include_headers(true))
+          .on_request(DefaultOnRequest::new().level(Level::INFO))
+          .on_response(
+            DefaultOnResponse::new().level(Level::INFO).latency_unit(LatencyUnit::Micros),
+          )
+        )
+        .layer(
+          CorsLayer::new()
+            .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+            .allow_credentials(true)
+            .allow_origin(
+              std::env::var("FRONTEND_URL")
+              .unwrap()
+              .parse::<HeaderValue>()
+              .unwrap()
+            )
+            .allow_headers([CONTENT_TYPE])
+        )
+        .layer(axum::Extension(state.clone()))
+    )
+    .with_state(state)
 }
