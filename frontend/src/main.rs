@@ -30,6 +30,6 @@ fn main() {
 }
 
 mod prelude {
-    // pub use crate::page;
+    pub use crate::page;
     pub use crate::util::{ sync_handler };
 }

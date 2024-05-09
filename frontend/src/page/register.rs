@@ -1,11 +1,12 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
-use crate::prelude::*;
+use crate::{elements::{keyed_notification_box::KeyedNotifications, KeyedNotificationBox}, maybe_class, prelude::*};
 
 pub struct PageState {
   username: UseState<String>,
   password: UseState<String>,
+  form_errors: KeyedNotifications,
 }
 
 impl PageState {
@@ -13,7 +14,14 @@ impl PageState {
         Self {
             username: use_state(cx, String::new).clone(),
             password: use_state(cx, String::new).clone(),
+            form_errors: KeyedNotifications::default(),
         }
+    }
+
+    pub fn can_submit(&self) -> bool {
+        !(self.form_errors.has_message() ||
+          self.username.current().is_empty() ||
+          self.password.current().is_empty())
     }
 }
 
@@ -84,7 +92,11 @@ pub fn Register(cx: Scope) -> Element {
     let username_input = sync_handler!(
         [page_state],
         move |ev: FormEvent| {
-            let username = uchat_domain::Username::new(&ev.value);
+            if let Err(e) = uchat_domain::Username::new(&ev.value) {
+                page_state.with_mut(|state| state.form_errors.set("bad-username", e.to_string()));
+            } else {
+                page_state.with_mut(|state| state.form_errors.remove("bad-username"));
+            };
             page_state.with_mut(|state| state.username.set(ev.value.clone()));
         }
     );
@@ -92,10 +104,21 @@ pub fn Register(cx: Scope) -> Element {
     let password_input = sync_handler!(
         [page_state],
         move |ev: FormEvent| {
-            let password = uchat_domain::Password::new(&ev.value);
+            if let Err(e) = uchat_domain::Password::new(&ev.value) {
+                page_state.with_mut(|state| state.form_errors.set("bad-password", e.to_string()));
+            } else {
+                page_state.with_mut(|state| state.form_errors.remove("bad-password"));
+            };
             page_state.with_mut(|state| state.password.set(ev.value.clone()));
         }
     );
+
+    let submit_btn_style = maybe_class!("btn-disabled", !page_state.with(|state| state.can_submit()));
+
+    // let submit_btn_style = match page_state.with(|state| state.can_submit()){
+    //     false  => "btn-disabled",
+    //     true => ""
+    // };
 
     cx.render(rsx! {
         form {
@@ -115,8 +138,14 @@ pub fn Register(cx: Scope) -> Element {
                 oninput: password_input,
             }
 
+            KeyedNotificationBox {
+                legend: "Form Errors",
+                notifications: page_state.clone().with(|state| state.form_errors.clone())
+            }
+
             button {
-                class: "btn",
+                class: "btn {submit_btn_style}",
+                disabled: !page_state.with(|state| state.can_submit()),
                 // type是rust中的保留字
                 r#type: "submit",
                 "Signup"

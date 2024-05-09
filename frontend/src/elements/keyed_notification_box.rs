@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use std::collections::{hash_map::Values, HashMap};
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct KeyedNotifications {
     pub inner: HashMap<String, String>,
 }
