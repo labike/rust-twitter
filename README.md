@@ -254,3 +254,15 @@ this, two changes need to be made:
    `#[nutype(validate(not_empty, ...))]`
 2. In all `impl` blocks where we create `fn formatted_error`, change
    `StructError::Missing` to `StructError::Empty`.
+
+> psql -d postgres -U postgres
+> postgres=# CREATE USER ohayo WITH SUPERUSER PASSWORD 123456;
+
+or
+
+> createuser -s -P ohayo
+> 123456
+>
+
+#### 运行
+> just serve-api
